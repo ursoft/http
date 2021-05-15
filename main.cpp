@@ -18,6 +18,8 @@
 #include <unistd.h>
 #include <ev.h>
 
+FILE *log = fopen("/tmp/log", "wt");
+
 // Debug mode, a lot of debug print to std::cout
 // #define HTTP_DEBUG
 
@@ -152,6 +154,8 @@ close(slave_socket);
     std::cout << buf << std::endl;
     std::cout << "==================================" << std::endl;
 #endif
+fprintf(log, "r: %s\n", buf);
+fflush(log);
 
     // process http request, extract file path
     std::string path;
