@@ -145,6 +145,8 @@ void process_slave_socket(int slave_socket)
     {
         //std::cout << "do_work: recv return 0" << std::endl;
 close(slave_socket);
+fprintf(log, "close\n");
+fflush(log);
         return;
     }
 buf[recv_ret]=0;
