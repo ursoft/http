@@ -211,7 +211,7 @@ void process_slave_socket(int slave_socket)
         std::cout << "do_work: send return " << send_ret << std::endl;
 #   endif*/
     }
-shutdown(slave_socket, SHUT_RDWR);
+//shutdown(slave_socket, SHUT_RDWR);
 close(slave_socket);
 }
 
