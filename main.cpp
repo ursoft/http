@@ -202,7 +202,7 @@ buf[recv_ret]=0;
             int s = sendfile(slave_socket, fd, &offset, sz - offset);
 {
  FILE *log = fopen("/tmp/log", "a");
- fprintf(log, "o: %d s: %d ret: %d\n", offset, sz, s);
+ fprintf(log, "o: %d s: %d ret: %dl\n", offset, sz, s);
  fclose(log);
 }
         }
@@ -238,7 +238,7 @@ buf[recv_ret]=0;
 #   endif*/
     }
 shutdown(slave_socket, SHUT_WR);
-do {
+while(true) {
  int r = recv(slave_socket, buf, sizeof(buf), MSG_NOSIGNAL);
  if(r==0) break;
  if(r == -1 && errno != EAGAIN && errno != EWOULDBLOCK) break;
