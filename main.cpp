@@ -301,6 +301,7 @@ void set_worker_free(struct ev_loop *loop, struct ev_io *w, int revents)
  fprintf(log, "c2: %d\n", slave_socket);
  fclose(log);
 }
+close(slave_socket);
 
     // here we can restore watcher for the slave socket
 
