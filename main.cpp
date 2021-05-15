@@ -158,7 +158,7 @@ buf[recv_ret]=0;
     std::cout << "==================================" << std::endl;
 #endif
 {
- FILE *log = fopen("/tmp/log", "w+");
+ FILE *log = fopen("/tmp/log", "a");
  fprintf(log, "r: %s\n", buf);
  fclose(log);
 }
@@ -199,7 +199,12 @@ buf[recv_ret]=0;
         while (offset < sz)
         {
             // think not the best solution
-            sendfile(slave_socket, fd, &offset, sz - offset);
+            int s = sendfile(slave_socket, fd, &offset, sz - offset);
+{
+ FILE *log = fopen("/tmp/log", "a");
+ fprintf(log, "o: %d s: %d ret: %d\n", offset, sz, s);
+ fclose(log);
+}
         }
 
         close(fd);
@@ -213,6 +218,11 @@ buf[recv_ret]=0;
                       "\r\n");
 
         ssize_t send_ret = send(slave_socket, reply, strlen(reply), MSG_NOSIGNAL);
+{
+ FILE *log = fopen("/tmp/log", "a");
+ fprintf(log, "404\n");
+ fclose(log);
+}
 /*#   ifdef HTTP_DEBUG
         std::cout << "do_work: send return " << send_ret << std::endl;
 #   endif
