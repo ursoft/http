@@ -18,8 +18,6 @@
 #include <unistd.h>
 #include <ev.h>
 
-FILE *log = fopen("/tmp/log", "wt");
-
 // Debug mode, a lot of debug print to std::cout
 // #define HTTP_DEBUG
 
@@ -145,8 +143,11 @@ void process_slave_socket(int slave_socket)
     {
         //std::cout << "do_work: recv return 0" << std::endl;
 close(slave_socket);
-fprintf(log, "close\n");
-fflush(log);
+{
+ FILE *log = fopen("/tmp/log", "w+");
+ fprintf(log, "close\n");
+ fclose(log);
+}
         return;
     }
 buf[recv_ret]=0;
@@ -156,8 +157,11 @@ buf[recv_ret]=0;
     std::cout << buf << std::endl;
     std::cout << "==================================" << std::endl;
 #endif
-fprintf(log, "r: %s\n", buf);
-fflush(log);
+{
+ FILE *log = fopen("/tmp/log", "w+");
+ fprintf(log, "r: %s\n", buf);
+ fclose(log);
+}
 
     // process http request, extract file path
     std::string path;
