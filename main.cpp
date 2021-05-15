@@ -211,6 +211,8 @@ void process_slave_socket(int slave_socket)
         std::cout << "do_work: send return " << send_ret << std::endl;
 #   endif*/
     }
+shutdown(slave_socket, SHUT_RDWR);
+close(slave_socket);
 }
 
 void do_work(struct ev_loop *loop, struct ev_io *w, int revents)
@@ -238,9 +240,7 @@ void do_work(struct ev_loop *loop, struct ev_io *w, int revents)
     process_slave_socket(slave_socket);
 
     // write back to paired socket to update worker status
-    //sock_fd_write(w->fd, tmp, sizeof(tmp), slave_socket);
-shutdown(slave_socket, SHUT_RDWR);
-close(slave_socket);
+    sock_fd_write(w->fd, tmp, sizeof(tmp), slave_socket);
 
 #ifdef HTTP_DEBUG
     std::cout << "do_work: sent slave socket " << slave_socket << std::endl;
