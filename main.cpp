@@ -134,9 +134,10 @@ void process_slave_socket(int slave_socket)
     // recv from slave socket
     char buf[1024];
     ssize_t recv_ret = recv(slave_socket, buf, sizeof(buf), MSG_NOSIGNAL);
-    if (recv_ret == -1)
+    if (recv_ret <= 0)
     {
         std::cout << "do_work: recv return -1" << std::endl;
+close(slave_socket);
         return;
     }
 
@@ -211,8 +212,8 @@ void process_slave_socket(int slave_socket)
         std::cout << "do_work: send return " << send_ret << std::endl;
 #   endif*/
     }
-shutdown(slave_socket, SHUT_RDWR);
-close(slave_socket);
+//shutdown(slave_socket, SHUT_RDWR);
+//close(slave_socket);
 }
 
 void do_work(struct ev_loop *loop, struct ev_io *w, int revents)
