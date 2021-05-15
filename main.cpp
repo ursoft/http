@@ -134,9 +134,14 @@ void process_slave_socket(int slave_socket)
     // recv from slave socket
     char buf[1024];
     ssize_t recv_ret = recv(slave_socket, buf, sizeof(buf), MSG_NOSIGNAL);
-    if (recv_ret <= 0)
+    if (recv_ret < 0)
     {
-        std::cout << "do_work: recv return -1" << std::endl;
+        //std::cout << "do_work: recv return -1" << std::endl;
+        return;
+    }
+    if (recv_ret == 0)
+    {
+        //std::cout << "do_work: recv return 0" << std::endl;
 close(slave_socket);
         return;
     }
@@ -229,7 +234,7 @@ void do_work(struct ev_loop *loop, struct ev_io *w, int revents)
     sock_fd_read(w->fd, tmp, sizeof(tmp), &slave_socket);
     if (slave_socket == -1)
     {
-        std::cout << "do_work: slave_socket == -1" << std::endl;
+        //std::cout << "do_work: slave_socket == -1" << std::endl;
         exit(4);
     }
 
@@ -281,7 +286,7 @@ pid_t create_worker()
     int sp[2];
     if (socketpair(AF_LOCAL, SOCK_STREAM, 0, sp) == -1)
     {
-        printf("socketpair error, %s\n", strerror(errno));
+        //printf("socketpair error, %s\n", strerror(errno));
         exit(1);
     }
 
@@ -341,7 +346,7 @@ void master_accept_connection(struct ev_loop *loop, struct ev_io *w, int revents
     int slave_socket = accept(w->fd, 0, 0);
     if (slave_socket == -1)
     {
-        printf("accept error, %s\n", strerror(errno));
+        //printf("accept error, %s\n", strerror(errno));
         exit(3);
     }
 
@@ -363,7 +368,7 @@ int main(int argc, char* argv[])
     // we want to be a daemon
     if (daemon(0, 0) == -1)
     {
-        std::cout << "daemon error" << std::endl;
+        //std::cout << "daemon error" << std::endl;
         exit(1);
     }
 
@@ -414,7 +419,7 @@ int main(int argc, char* argv[])
     if (create_worker() == 0)
     {
         // worker 1 process
-        printf("Worker 1 is about to return\n");
+        //printf("Worker 1 is about to return\n");
         return 0;
     }
 
@@ -422,14 +427,14 @@ int main(int argc, char* argv[])
     if (create_worker() == 0)
     {
         // worker 2 process
-        printf("Worker 2 is about to return\n");
+        //printf("Worker 2 is about to return\n");
         return 0;
     }
 
     if (create_worker() == 0)
     {
         // worker 3 process
-        printf("Worker 3 is about to return\n");
+        //printf("Worker 3 is about to return\n");
         return 0;
     }
 
@@ -440,7 +445,7 @@ int main(int argc, char* argv[])
     int master_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (master_socket == -1)
     {
-        printf("socket error, %s\n", strerror(errno));
+        //printf("socket error, %s\n", strerror(errno));
         exit(1);
     }
     set_nonblock(master_socket);
@@ -451,13 +456,13 @@ int main(int argc, char* argv[])
 
     if (inet_pton(AF_INET, host, &(addr.sin_addr.s_addr)) != 1)
     {
-        printf("inet_aton error\n");
+        //printf("inet_aton error\n");
         exit(2);
     }
 
     if (bind(master_socket, (struct sockaddr* )&addr, sizeof(addr)) == -1)
     {
-        printf("bind return -1, %s\n", strerror(errno));
+        //printf("bind return -1, %s\n", strerror(errno));
         exit(3);
     }
 
@@ -527,7 +532,7 @@ sock_fd_write(int sock, void *buf, ssize_t buflen, int fd)
     size = sendmsg(sock, &msg, 0);
 
     if (size < 0)
-        perror ("sendmsg");
+        //perror ("sendmsg");
     return size;
 }
 
@@ -556,19 +561,19 @@ sock_fd_read(int sock, void *buf, ssize_t bufsize, int *fd)
         msg.msg_controllen = sizeof(cmsgu.control);
         size = recvmsg (sock, &msg, 0);
         if (size < 0) {
-            perror ("recvmsg");
+            //perror ("recvmsg");
             exit(1);
         }
         cmsg = CMSG_FIRSTHDR(&msg);
         if (cmsg && cmsg->cmsg_len == CMSG_LEN(sizeof(int))) {
             if (cmsg->cmsg_level != SOL_SOCKET) {
-                fprintf (stderr, "invalid cmsg_level %d\n",
-                     cmsg->cmsg_level);
+                //fprintf (stderr, "invalid cmsg_level %d\n",
+                //     cmsg->cmsg_level);
                 exit(1);
             }
             if (cmsg->cmsg_type != SCM_RIGHTS) {
-                fprintf (stderr, "invalid cmsg_type %d\n",
-                     cmsg->cmsg_type);
+                //fprintf (stderr, "invalid cmsg_type %d\n",
+                //     cmsg->cmsg_type);
                 exit(1);
             }
 
@@ -581,7 +586,7 @@ sock_fd_read(int sock, void *buf, ssize_t bufsize, int *fd)
     } else {
         size = read (sock, buf, bufsize);
         if (size < 0) {
-            perror("read");
+            //perror("read");
             exit(1);
         }
     }
