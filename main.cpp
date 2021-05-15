@@ -211,7 +211,7 @@ void process_slave_socket(int slave_socket)
         std::cout << "do_work: send return " << send_ret << std::endl;
 #   endif*/
     }
-//shutdown(slave_socket, SHUT_RDWR);
+shutdown(slave_socket, SHUT_RDWR);
 close(slave_socket);
 }
 
@@ -344,7 +344,7 @@ void master_accept_connection(struct ev_loop *loop, struct ev_io *w, int revents
         exit(3);
     }
 
-    set_nonblock(slave_socket);
+    //set_nonblock(slave_socket);
 
     // create watcher for a slave socket
     struct ev_io* slave_watcher = new ev_io;
