@@ -253,7 +253,7 @@ void do_work(struct ev_loop *loop, struct ev_io *w, int revents)
 #endif
 
     // get appropriate slave socket and read from it
-    int slave_socket;
+    int slave_socket=-1;
     char tmp[1];
 
     sock_fd_read(w->fd, tmp, sizeof(tmp), &slave_socket);
@@ -272,7 +272,7 @@ void do_work(struct ev_loop *loop, struct ev_io *w, int revents)
 
     // write back to paired socket to update worker status
     sock_fd_write(w->fd, tmp, sizeof(tmp), slave_socket);
-
+close(slave_socket);
 #ifdef HTTP_DEBUG
     std::cout << "do_work: sent slave socket " << slave_socket << std::endl;
 #endif
@@ -285,7 +285,7 @@ void set_worker_free(struct ev_loop *loop, struct ev_io *w, int revents)
     int fd = w->fd;
 
     char tmp[1];
-    int slave_socket;
+    int slave_socket=-1;
 
     sock_fd_read(fd, tmp, sizeof(tmp), &slave_socket);
 #ifdef HTTP_DEBUG
@@ -298,6 +298,7 @@ void set_worker_free(struct ev_loop *loop, struct ev_io *w, int revents)
     while ((slave_socket = safe_pop_front()) != -1)
     {
         process_slave_socket(slave_socket);
+close(slave_socket);
     }
 
     workers[fd] = true;
@@ -556,7 +557,7 @@ sock_fd_write(int sock, void *buf, ssize_t buflen, int fd)
 
     size = sendmsg(sock, &msg, 0);
 
-    if (size < 0)
+    //if (size < 0)
         //perror ("sendmsg");
     return size;
 }
