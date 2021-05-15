@@ -237,8 +237,13 @@ buf[recv_ret]=0;
         std::cout << "do_work: send return " << send_ret << std::endl;
 #   endif*/
     }
-//shutdown(slave_socket, SHUT_RDWR);
-//close(slave_socket);
+shutdown(slave_socket, SHUT_WR);
+do {
+ int r = recv(slave_socket, buf, sizeof(buf), MSG_NOSIGNAL);
+ if(r==0) break;
+ if(r == -1 && errno != EAGAIN && errno != EWOULDBLOCK) break;
+}
+close(slave_socket);
 }
 
 void do_work(struct ev_loop *loop, struct ev_io *w, int revents)
