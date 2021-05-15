@@ -147,7 +147,7 @@ void process_slave_socket(int slave_socket)
 close(slave_socket);
         return;
     }
-
+buf[recv_ret]=0;
 #ifdef HTTP_DEBUG
     std::cout << "do_work: recv return " << recv_ret << std::endl;
     std::cout << "======== received message ========" << std::endl;
