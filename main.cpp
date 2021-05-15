@@ -192,12 +192,12 @@ void process_slave_socket(int slave_socket)
     {
         strcpy(reply, "HTTP/1.1 404 Not Found\r\n"
                       "Content-Type: text/html\r\n"
-                      "Content-length: 107\r\n"
+                      "Content-length: 0\r\n"
                       "Connection: close\r\n"
                       "\r\n");
 
         ssize_t send_ret = send(slave_socket, reply, strlen(reply), MSG_NOSIGNAL);
-#   ifdef HTTP_DEBUG
+/*#   ifdef HTTP_DEBUG
         std::cout << "do_work: send return " << send_ret << std::endl;
 #   endif
         strcpy(reply, "<html>\n<head>\n<title>Not Found</title>\n</head>\r\n");
@@ -209,7 +209,7 @@ void process_slave_socket(int slave_socket)
         send_ret = send(slave_socket, reply, strlen(reply), MSG_NOSIGNAL);
 #   ifdef HTTP_DEBUG
         std::cout << "do_work: send return " << send_ret << std::endl;
-#   endif
+#   endif*/
     }
 }
 
@@ -238,7 +238,9 @@ void do_work(struct ev_loop *loop, struct ev_io *w, int revents)
     process_slave_socket(slave_socket);
 
     // write back to paired socket to update worker status
-    sock_fd_write(w->fd, tmp, sizeof(tmp), slave_socket);
+    //sock_fd_write(w->fd, tmp, sizeof(tmp), slave_socket);
+shutdown(slave_socket, SHUT_RDWR);
+close(slave_socket);
 
 #ifdef HTTP_DEBUG
     std::cout << "do_work: sent slave socket " << slave_socket << std::endl;
