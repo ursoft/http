@@ -273,6 +273,11 @@ void do_work(struct ev_loop *loop, struct ev_io *w, int revents)
     // write back to paired socket to update worker status
     sock_fd_write(w->fd, tmp, sizeof(tmp), slave_socket);
 close(slave_socket);
+{
+ FILE *log = fopen("/tmp/log", "a");
+ fprintf(log, "c1: %d\n", slave_socket);
+ fclose(log);
+}
 #ifdef HTTP_DEBUG
     std::cout << "do_work: sent slave socket " << slave_socket << std::endl;
 #endif
@@ -291,6 +296,11 @@ void set_worker_free(struct ev_loop *loop, struct ev_io *w, int revents)
 #ifdef HTTP_DEBUG
     std::cout << "set_worker_free: got slave socket " << slave_socket << std::endl;
 #endif
+{
+ FILE *log = fopen("/tmp/log", "a");
+ fprintf(log, "c2: %d\n", slave_socket);
+ fclose(log);
+}
 
     // here we can restore watcher for the slave socket
 
@@ -299,6 +309,11 @@ void set_worker_free(struct ev_loop *loop, struct ev_io *w, int revents)
     {
         process_slave_socket(slave_socket);
 close(slave_socket);
+{
+ FILE *log = fopen("/tmp/log", "a");
+ fprintf(log, "c3: %d\n", slave_socket);
+ fclose(log);
+}
     }
 
     workers[fd] = true;
