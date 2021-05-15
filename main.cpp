@@ -189,7 +189,7 @@ close(slave_socket);
         while (offset < sz)
         {
             // think not the best solution
-            offset = sendfile(slave_socket, fd, &offset, sz - offset);
+            sendfile(slave_socket, fd, &offset, sz - offset);
         }
 
         close(fd);
